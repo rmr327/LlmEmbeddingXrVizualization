@@ -1,13 +1,16 @@
-from transformers import AutoModel, AutoTokenizer
-import torch
-from typing import List, Optional
-import numpy as np
-import plotly.express as px
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-import umap
-import pandas as pd
+"""This module is used to extract embeddings from the provided Hugging Face model"""
+
 import warnings
+from typing import List, Optional
+
+import numpy as np  # pylint: disable=import-error
+import pandas as pd  # pylint: disable=import-error
+import plotly.express as px  # pylint: disable=import-error
+import torch  # pylint: disable=import-error
+import umap  # pylint: disable=import-error
+from sklearn.decomposition import PCA  # pylint: disable=import-error
+from sklearn.manifold import TSNE  # pylint: disable=import-error
+from transformers import AutoModel, AutoTokenizer  # pylint: disable=import-error
 
 # stop future warning
 warnings.filterwarnings("ignore")
@@ -21,27 +24,30 @@ RANDOM_STATE = 42
 
 
 class HuggingFaceEmbeddingViz:
-    def __init__(self, model_name: str, device: torch.device = torch.device("cpu")):
+    """This class is used to extract embeddings from the provided Hugging Face model"""
+
+    def __init__(self, model_name: str, device_: torch.device = torch.device("cpu")):
         """This class is used to extract embeddings from the provided Hugging Face model"""
 
         try:
             self.model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True
-            ).to(device)
+            ).to(device_)
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_name, trust_remote_code=True
             )
 
-        except (OSError, ValueError) as e:
+        except (OSError, ValueError) as e_err:
             raise RuntimeError(
-                f"Failed to load model or tokenizer for {model_name}: {e}"
-            )
+                f"Failed to load model or tokenizer for {model_name}: {e_err}"
+            ) from e_err
 
         self.model_name = model_name
-        self.device = device
+        self.device = device_
 
     def get_model_embeddings(self, text_list: List[str]) -> np.ndarray:
-        """This function is used to extract embeddings for the passed text as defined by the LLM models embedding space"""
+        """This function is used to extract embeddings for the passed text as
+        defined by the LLM models embedding space"""
         if self.device.type == "cpu":
             raise RuntimeError("This model requires a CUDA-enabled GPU to run.")
 
@@ -61,15 +67,16 @@ class HuggingFaceEmbeddingViz:
 
         return np.array(embeddings)
 
-    def generate_visualization(
-        self,
-        embeddings: np.ndarray,
-        labels_: Optional[List[str]] = None,
-        color_: Optional[List[str]] = None,
-        method: str = "pca",
-        plot: bool = False,
-    ) -> pd.DataFrame:
-        """This function is used to generate a visualization of the embedding space of the LLM model, using the plotly library"""
+    def generate_visualization(  # pylint: disable=too-many-arguments
+        self,  # pylint: disable=too-many-arguments
+        embeddings: np.ndarray,  # pylint: disable=too-many-arguments
+        labels_: Optional[List[str]] = None,  # pylint: disable=too-many-arguments
+        color_: Optional[List[str]] = None,  # pylint: disable=too-many-arguments
+        method: str = "pca",  # pylint: disable=too-many-arguments
+        plot: bool = False,  # pylint: disable=too-many-arguments
+    ) -> pd.DataFrame:  # pylint: disable=too-many-arguments
+        """This function is used to generate a visualization of the
+        embedding space of the LLM model, using the plotly library"""
         reducer, title, x_label, y_label = self._get_reducer(method, labels_)
         reduced_embeddings = reducer.fit_transform(embeddings)
 
@@ -122,15 +129,15 @@ class HuggingFaceEmbeddingViz:
             raise ValueError("Invalid method. Choose from 'pca', 'tsne', or 'umap'.")
         return reducer, title, x_label, y_label
 
-    def _plot_embeddings(
-        self,
-        embeddings: np.ndarray,
-        labels_: Optional[List[str]],
-        color_: Optional[List[str]],
-        title: str,
-        x_label: str,
-        y_label: str,
-    ) -> None:
+    @staticmethod
+    def _plot_embeddings(  # pylint: disable=too-many-arguments
+        embeddings: np.ndarray,  # pylint: disable=too-many-arguments
+        labels_: Optional[List[str]],  # pylint: disable=too-many-arguments
+        color_: Optional[List[str]],  # pylint: disable=too-many-arguments
+        title: str,  # pylint: disable=too-many-arguments
+        x_label: str,  # pylint: disable=too-many-arguments
+        y_label: str,  # pylint: disable=too-many-arguments
+    ) -> None:  # pylint: disable=too-many-arguments
         """Helper function to plot embeddings using Plotly"""
         fig = px.scatter(
             embeddings,
@@ -220,28 +227,28 @@ if __name__ == "__main__":
     )
 
     # Hugging Face Model examples
-    # hugging_model = "dunzhang/stella_en_400M_v5"
-    # hugging_model = "Qwen/Qwen2.5-1.5B-Instruct"
-    # hugging_model = "facebook/# bart-large"
-    hugging_model = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+    # HUGGING_MODEL = "dunzhang/stella_en_400M_v5"
+    # HUGGING_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
+    # HUGGING_MODEL = "facebook/# bart-large"
+    HUGGING_MODEL = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
     # Initialize the class
-    hf_embedding_viz = HuggingFaceEmbeddingViz(hugging_model, device)
+    hf_embedding_viz = HuggingFaceEmbeddingViz(HUGGING_MODEL, device)
 
     # Generate word embeddings for stella model
-    embeddings = hf_embedding_viz.get_model_embeddings(words)
+    embeddings_ = hf_embedding_viz.get_model_embeddings(words)
 
     # Generate PCA visualization
     reduced_embeddings_pca = hf_embedding_viz.generate_visualization(
-        embeddings, labels_=words, color_=domains, method="pca", plot=False
+        embeddings_, labels_=words, color_=domains, method="pca", plot=False
     )
 
     # Generate TSNE visualization
     reduced_embeddings_tsne = hf_embedding_viz.generate_visualization(
-        embeddings, labels_=words, color_=domains, method="tsne", plot=False
+        embeddings_, labels_=words, color_=domains, method="tsne", plot=False
     )
 
     # Generate UMAP visualization
     reduced_embeddings_umap = hf_embedding_viz.generate_visualization(
-        embeddings, labels_=words, color_=domains, method="umap", plot=True
+        embeddings_, labels_=words, color_=domains, method="umap", plot=True
     )
