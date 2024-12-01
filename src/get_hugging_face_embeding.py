@@ -23,18 +23,28 @@ RANDOM_STATE = 42
 class HuggingFaceEmbeddingViz:
     def __init__(self, model_name: str, device: torch.device = torch.device("cpu")):
         """This class is used to extract embeddings from the provided Hugging Face model"""
-        self.model = AutoModel.from_pretrained(model_name, trust_remote_code=True).to(
-            device
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, trust_remote_code=True
-        )
+
+        try:
+            self.model = AutoModel.from_pretrained(
+                model_name, trust_remote_code=True
+            ).to(device)
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name, trust_remote_code=True
+            )
+
+        except (OSError, ValueError) as e:
+            raise RuntimeError(
+                f"Failed to load model or tokenizer for {model_name}: {e}"
+            )
+
         self.model_name = model_name
         self.device = device
 
     def get_model_embeddings(self, text_list: List[str]) -> np.ndarray:
         """This function is used to extract embeddings for the passed text as defined by the LLM models embedding space"""
         embeddings = []
+        # Dynamically set max_length based on the model
+        max_length = self.tokenizer.model_max_length
 
         with torch.no_grad():
             for entry in text_list:
@@ -206,8 +216,13 @@ if __name__ == "__main__":
         + ["Sports"] * 10
     )
 
-    # Initialize the class
+    # Hugging Face Model examples
     hugging_model = "dunzhang/stella_en_400M_v5"
+    # hugging_model = "Qwen/Qwen2.5-1.5B-Instruct"
+    # hugging_model = "facebook/bart-large"
+    # hugging_model = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+
+    # Initialize the class
     hf_embedding_viz = HuggingFaceEmbeddingViz(hugging_model, device)
 
     # Generate word embeddings for stella model
