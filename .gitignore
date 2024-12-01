@@ -4,3 +4,9 @@
 "*.pyo"
 "*.pyd"
 "*.pyz"
+// Add other directories or files to ignore
+"node_modules/"
+"dist/"
+"build/"
+".DS_Store"
+"xformers/"

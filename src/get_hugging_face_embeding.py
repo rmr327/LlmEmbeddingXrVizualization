@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore")
 
 
 class HuggingFaceEmbeddingViz:
-    def __init__(self, model_name):
+    def __init__(self, model_name, device=torch.device("cpu")):
         """This class is used to extract embeddings from the privded
         Hugging Face model"""
         self.model = AutoModel.from_pretrained(model_name, trust_remote_code=True).to(
@@ -27,6 +27,7 @@ class HuggingFaceEmbeddingViz:
             model_name, trust_remote_code=True
         )
         self.model_name = model_name
+        self.device = device
 
     def get_model_embeddings(self, text_list: List[str]) -> np.array:
         """This function is used to extract embeddings for the passed text as defined by the
@@ -39,7 +40,7 @@ class HuggingFaceEmbeddingViz:
                 # Tokenize the text entry
                 input_data = self.tokenizer(
                     entry, return_tensors="pt", truncation=True, max_length=512
-                ).to(device)
+                ).to(self.device)
 
                 input_data = {k: v.cuda() for k, v in input_data.items()}
 
@@ -91,13 +92,6 @@ if __name__ == "__main__":
     else:
         device = torch.device("cpu")
         print("Warning: CUDA not available, using CPU. Performance may be slower.")
-
-    model = AutoModel.from_pretrained(
-        "dunzhang/stella_en_400M_v5", trust_remote_code=True
-    ).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(
-        "dunzhang/stella_en_400M_v5", trust_remote_code=True
-    )
 
     # Words List (Organized by Domain)
     words = [
@@ -169,7 +163,11 @@ if __name__ == "__main__":
 
     # initialize the class
     hugging_model = "dunzhang/stella_en_400M_v5"
-    hf_embedding_viz = HuggingFaceEmbeddingViz(hugging_model)
+
+    # different models can be used
+    # hugging_model = "bert-base-uncased"
+
+    hf_embedding_viz = HuggingFaceEmbeddingViz(hugging_model, device)
 
     # generate  word embeddings for stella model
     embeddings = hf_embedding_viz.get_model_embeddings(words)
@@ -179,4 +177,4 @@ if __name__ == "__main__":
         embeddings, labels_=words, color_=domains
     )
 
-    reduced_embeddings.to_clipboard(index=False)
+    pd.DataFrame(reduced_embeddings).to_clipboard(index=False)
