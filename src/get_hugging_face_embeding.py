@@ -42,6 +42,9 @@ class HuggingFaceEmbeddingViz:
 
     def get_model_embeddings(self, text_list: List[str]) -> np.ndarray:
         """This function is used to extract embeddings for the passed text as defined by the LLM models embedding space"""
+        if self.device.type == "cpu":
+            raise RuntimeError("This model requires a CUDA-enabled GPU to run.")
+
         embeddings = []
         # Dynamically set max_length based on the model
         max_length = self.tokenizer.model_max_length
@@ -219,7 +222,7 @@ if __name__ == "__main__":
     # Hugging Face Model examples
     # hugging_model = "dunzhang/stella_en_400M_v5"
     # hugging_model = "Qwen/Qwen2.5-1.5B-Instruct"
-    # hugging_model = "facebook/bart-large"
+    # hugging_model = "facebook/# bart-large"
     hugging_model = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
     # Initialize the class
