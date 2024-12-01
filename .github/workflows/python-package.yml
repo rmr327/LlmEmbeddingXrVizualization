@@ -38,6 +38,11 @@ jobs:
         sudo apt-get install -y nvidia-driver-460
         sudo reboot
     - name: Lint with pylint
+      shell: /usr/bin/bash -e {0}
+      env:
+        pythonLocation: /opt/hostedtoolcache/Python/3.10.15/x64
+        LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.15/x64/lib
+        PYTHONPATH: :/home/runner/work/LlmEmbeddingXrVizualization/LlmEmbeddingXrVizualization/src
       run: |
         pylint src/*.py
     - name: Test with pytest
