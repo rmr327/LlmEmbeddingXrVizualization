@@ -63,7 +63,7 @@ def test_generate_visualization(hf_embedding_viz):
     Raises:
         pytest.skip: If GPU is not available, the test is skipped.
     """
-    text_list = ["Hello world", "Pytest is great"]
+    text_list = [f"hello_world_{i}" for i in range(50)]
 
     try:
         embeddings = hf_embedding_viz.get_model_embeddings(text_list)
