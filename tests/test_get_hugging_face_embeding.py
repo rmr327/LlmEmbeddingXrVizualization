@@ -1,8 +1,18 @@
-import pytest
-import torch
+import os
+
 import numpy as np
 import pandas as pd
+import pytest
+import torch
+
 from src.get_hugging_face_embeding import HuggingFaceEmbeddingViz
+
+
+@pytest.fixture(scope="module", autouse=True)
+def set_test_env():
+    os.environ["TEST_ENV"] = "1"
+    yield
+    del os.environ["TEST_ENV"]
 
 
 @pytest.fixture
