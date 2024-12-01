@@ -16,8 +16,11 @@ jobs:
         python -m pip install pylint pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Set PYTHONPATH
+    - name: Set PYTHONPATH src
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
+
+    - name: Set PYTHONPATH tests
+      run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/tests" >> $GITHUB_ENV
 
     - name: Install CUDA and NVIDIA drivers
       run: |
@@ -30,8 +33,8 @@ jobs:
 
     - name: Lint with pylint
       run: |
-        pylint src/get_hugging_face_embeding.py
+        pylint src/*.py
 
     - name: Test with pytest
       run: |
-        pytest tests/test_get_hugging_face_embeding.py
+        pytest tests/*.py
