@@ -49,9 +49,9 @@ class HuggingFaceEmbeddingViz:
         with torch.no_grad():
             for entry in text_list:
                 input_data = self.tokenizer(
-                    entry, return_tensors="pt", truncation=True, max_length=512
+                    entry, return_tensors="pt", truncation=True, max_length=max_length
                 ).to(self.device)
-                input_data = {k: v.cuda() for k, v in input_data.items()}
+                input_data = {k: v.to(self.device) for k, v in input_data.items()}
                 last_hidden_state = self.model(**input_data).last_hidden_state
                 sentence_embedding = last_hidden_state[:, 0, :].cpu().numpy().flatten()
                 embeddings.append(sentence_embedding)
@@ -217,10 +217,10 @@ if __name__ == "__main__":
     )
 
     # Hugging Face Model examples
-    hugging_model = "dunzhang/stella_en_400M_v5"
+    # hugging_model = "dunzhang/stella_en_400M_v5"
     # hugging_model = "Qwen/Qwen2.5-1.5B-Instruct"
     # hugging_model = "facebook/bart-large"
-    # hugging_model = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+    hugging_model = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
     # Initialize the class
     hf_embedding_viz = HuggingFaceEmbeddingViz(hugging_model, device)
