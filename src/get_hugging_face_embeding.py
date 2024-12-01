@@ -27,7 +27,13 @@ class HuggingFaceEmbeddingViz:
     """This class is used to extract embeddings from the provided Hugging Face model"""
 
     def __init__(self, model_name: str, device_: torch.device = torch.device("cpu")):
-        """This class is used to extract embeddings from the provided Hugging Face model"""
+        """This class is used to extract embeddings from the provided Hugging Face model
+
+        Args:
+            model_name (str): The name of the Hugging Face model to use
+            device_ (torch.device, optional): The device to use for the model.
+            Defaults to torch.device("cpu")
+        """
 
         try:
             self.model = AutoModel.from_pretrained(
@@ -47,7 +53,15 @@ class HuggingFaceEmbeddingViz:
 
     def get_model_embeddings(self, text_list: List[str]) -> np.ndarray:
         """This function is used to extract embeddings for the passed text as
-        defined by the LLM models embedding space"""
+        defined by the LLM models embedding space
+
+        Args:
+            text_list (List[str]): The list of text to extract embeddings from
+
+        Returns:
+            np.ndarray: The embeddings of the text
+
+        """
         if self.device.type == "cpu":
             raise RuntimeError("This model requires a CUDA-enabled GPU to run.")
 
@@ -67,22 +81,43 @@ class HuggingFaceEmbeddingViz:
 
         return np.array(embeddings)
 
-    def generate_visualization(  # pylint: disable=too-many-arguments
-        self,  # pylint: disable=too-many-arguments
-        embeddings: np.ndarray,  # pylint: disable=too-many-arguments
-        labels_: Optional[List[str]] = None,  # pylint: disable=too-many-arguments
-        color_: Optional[List[str]] = None,  # pylint: disable=too-many-arguments
-        method: str = "pca",  # pylint: disable=too-many-arguments
-        plot: bool = False,  # pylint: disable=too-many-arguments
-    ) -> pd.DataFrame:  # pylint: disable=too-many-arguments
+    def generate_visualization(
+        self,
+        embeddings: np.ndarray,
+        labels_: Optional[List[str]] = None,
+        color_: Optional[List[str]] = None,
+        **kwargs,
+    ) -> pd.DataFrame:
         """This function is used to generate a visualization of the
-        embedding space of the LLM model, using the plotly library"""
+        embedding space of the LLM model, using the plotly library
+
+        Args:
+            embeddings (np.ndarray): The embeddings to visualize
+            labels_ (Optional[List[str]], optional): Labels for the embeddings. Defaults to None.
+            color_ (Optional[List[str]], optional): Color for the embeddings. Defaults to None.
+            **kwargs: Additional keyword arguments
+                - method (str): The method to use for visualization. Defaults to "umap".
+                - plot (bool): Whether to plot the embeddings. Defaults to False.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the reduced embeddings
+        """
+
+        method = kwargs.get("method", "umap")
+
         reducer, title, x_label, y_label = self._get_reducer(method, labels_)
         reduced_embeddings = reducer.fit_transform(embeddings)
 
+        plot = kwargs.get("plot", False)
+
         if plot:
             self._plot_embeddings(
-                reduced_embeddings, labels_, color_, title, x_label, y_label
+                reduced_embeddings,
+                labels_,
+                color_,
+                title=title,
+                x_label=x_label,
+                y_label=y_label,
             )
 
         reduced_embeddings_df = pd.DataFrame(
@@ -130,15 +165,32 @@ class HuggingFaceEmbeddingViz:
         return reducer, title, x_label, y_label
 
     @staticmethod
-    def _plot_embeddings(  # pylint: disable=too-many-arguments
-        embeddings: np.ndarray,  # pylint: disable=too-many-arguments
-        labels_: Optional[List[str]],  # pylint: disable=too-many-arguments
-        color_: Optional[List[str]],  # pylint: disable=too-many-arguments
-        title: str,  # pylint: disable=too-many-arguments
-        x_label: str,  # pylint: disable=too-many-arguments
-        y_label: str,  # pylint: disable=too-many-arguments
-    ) -> None:  # pylint: disable=too-many-arguments
-        """Helper function to plot embeddings using Plotly"""
+    def _plot_embeddings(
+        embeddings: np.ndarray,
+        labels_: Optional[List[str]],
+        color_: Optional[List[str]],
+        **kwargs,
+    ) -> None:
+        """Helper function to plot embeddings using Plotly
+
+        Args:
+            embeddings (np.ndarray): The embeddings to plot
+            labels_ (Optional[List[str]]): Labels for the embeddings
+            color_ (Optional[List[str]]): Color for the embeddings
+            **kwargs: Additional keyword arguments
+                - title (str): The title of the plot. Defaults to "Embeddings Visualization".
+                - x_label (str): The x-axis label. Defaults to "Component 1".
+                - y_label (str): The y-axis label. Defaults to "Component 2".
+
+        Returns:
+            None
+        """
+
+        # Set default values of the plot
+        title = kwargs.get("title", "Embeddings Visualization")
+        x_label = kwargs.get("x_label", "Component 1")
+        y_label = kwargs.get("y_label", "Component 2")
+
         fig = px.scatter(
             embeddings,
             x=0,
@@ -148,11 +200,12 @@ class HuggingFaceEmbeddingViz:
             labels={"0": x_label, "1": y_label},
             color=color_,
         )
-        fig.update_traces(marker=dict(size=8))
+        fig.update_traces(marker={"size": 8})
         fig.show()
 
 
 if __name__ == "__main__":
+
     # Assign device to make sure GPU is used when available
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     if device.type == "cpu":
