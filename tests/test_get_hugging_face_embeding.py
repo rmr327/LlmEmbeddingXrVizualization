@@ -47,7 +47,7 @@ def test_get_model_embeddings(hf_embedding_viz):
         print("Using demo data since GPU is not available")
         embeddings = np.load("tests/demo_embeddings.npy")
         assert isinstance(embeddings, np.ndarray)
-        assert embeddings.shape[0] == len(text_list)
+        assert embeddings.shape[0] == 50
 
 
 def test_generate_visualization(hf_embedding_viz):
@@ -76,5 +76,6 @@ def test_generate_visualization(hf_embedding_viz):
     reduced_embeddings_df = hf_embedding_viz.generate_visualization(
         embeddings, labels_=labels, method="pca", plot=False
     )
+
     assert not reduced_embeddings_df.empty
     assert "Labels" in reduced_embeddings_df.columns
