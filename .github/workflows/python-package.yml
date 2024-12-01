@@ -22,7 +22,11 @@ jobs:
     - name: Install CUDA and NVIDIA drivers
       run: |
         sudo apt-get update
-        sudo apt-get install -y nvidia-cuda-toolkit nvidia-driver-460
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:graphics-drivers/ppa
+        sudo apt-get update
+        sudo apt-get install -y nvidia-driver-535
+        sudo apt-get install -y nvidia-cuda-toolkit
 
     - name: Lint with pylint
       run: |
