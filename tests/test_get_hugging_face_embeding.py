@@ -45,7 +45,7 @@ def test_get_model_embeddings(hf_embedding_viz):
         assert embeddings.shape[0] == len(text_list)
     except RuntimeError:
         print("Using demo data since GPU is not available")
-        embeddings = np.load("demo_embeddings.npy")
+        embeddings = np.load("tests/demo_embeddings.npy")
         assert isinstance(embeddings, np.ndarray)
         assert embeddings.shape[0] == len(text_list)
 
@@ -70,7 +70,7 @@ def test_generate_visualization(hf_embedding_viz):
 
     except RuntimeError:
         print("Using demo embeddings since GPU is not available")
-        embeddings = np.load("demo_embeddings.npy")
+        embeddings = np.load("tests/demo_embeddings.npy")
 
     labels = ["Greeting", "Statement"]
     reduced_embeddings_df = hf_embedding_viz.generate_visualization(
