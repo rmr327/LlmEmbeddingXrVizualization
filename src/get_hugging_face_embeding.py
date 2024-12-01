@@ -1,5 +1,6 @@
 """This module is used to extract embeddings from the provided Hugging Face model"""
 
+import os
 import warnings
 from typing import List, Optional
 
@@ -62,7 +63,7 @@ class HuggingFaceEmbeddingViz:
             np.ndarray: The embeddings of the text
 
         """
-        if self.device.type == "cpu":
+        if self.device.type == "cpu" and not os.getenv("TEST_ENV"):
             raise RuntimeError("This model requires a CUDA-enabled GPU to run.")
 
         embeddings = []
