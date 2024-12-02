@@ -17,7 +17,7 @@ from transformers import AutoModel, AutoTokenizer  # pylint: disable=import-erro
 warnings.filterwarnings("ignore")
 
 # Constants
-N_COMPONENTS = 2
+N_COMPONENTS = 3
 PERPLEXITY = 30
 N_NEIGHBORS = 15
 MIN_DIST = 0.1
@@ -82,6 +82,26 @@ class HuggingFaceEmbeddingViz:
 
         return np.array(embeddings)
 
+    def save_embeddings(self, embeddings: np.ndarray, file_path: str) -> None:
+        """Save embeddings to a file
+
+        Args:
+            embeddings (np.ndarray): The embeddings to save
+            file_path (str): The path to the file where embeddings will be saved
+        """
+        np.save(file_path, embeddings)
+
+    def load_embeddings(self, file_path: str) -> np.ndarray:
+        """Load embeddings from a file
+
+        Args:
+            file_path (str): The path to the file from which embeddings will be loaded
+
+        Returns:
+            np.ndarray: The loaded embeddings
+        """
+        return np.load(file_path)
+
     def generate_visualization(
         self,
         embeddings: np.ndarray,
@@ -99,14 +119,13 @@ class HuggingFaceEmbeddingViz:
             **kwargs: Additional keyword arguments
                 - method (str): The method to use for visualization. Defaults to "umap".
                 - plot (bool): Whether to plot the embeddings. Defaults to False.
-
         Returns:
             pd.DataFrame: A DataFrame containing the reduced embeddings
         """
 
         method = kwargs.get("method", "umap")
 
-        reducer, title, x_label, y_label = self._get_reducer(method, labels_)
+        reducer, title, x_label, y_label, z_label = self._get_reducer(method, labels_)
         reduced_embeddings = reducer.fit_transform(embeddings)
 
         plot = kwargs.get("plot", False)
@@ -119,10 +138,11 @@ class HuggingFaceEmbeddingViz:
                 title=title,
                 x_label=x_label,
                 y_label=y_label,
+                z_label=z_label,
             )
 
         reduced_embeddings_df = pd.DataFrame(
-            reduced_embeddings, columns=[x_label, y_label]
+            reduced_embeddings, columns=[x_label, y_label, z_label]
         )
         if labels_ is not None:
             reduced_embeddings_df["Labels"] = labels_
@@ -134,8 +154,6 @@ class HuggingFaceEmbeddingViz:
         if method == "pca":
             reducer = PCA(n_components=N_COMPONENTS)
             title = f"PCA of {self.model_name} embedding space"
-            x_label = "Principal Component 1"
-            y_label = "Principal Component 2"
         elif method == "tsne":
             if len(labels_) > PERPLEXITY:
                 perplexity = PERPLEXITY
@@ -149,8 +167,6 @@ class HuggingFaceEmbeddingViz:
                 random_state=RANDOM_STATE,
             )
             title = f"t-SNE of {self.model_name} embedding space"
-            x_label = "Component 1"
-            y_label = "Component 2"
         elif method == "umap":
             reducer = umap.UMAP(
                 n_components=N_COMPONENTS,
@@ -159,23 +175,27 @@ class HuggingFaceEmbeddingViz:
                 random_state=RANDOM_STATE,
             )
             title = f"UMAP of {self.model_name} Embeddings"
-            x_label = "Component 1"
-            y_label = "Component 2"
         elif method == "mds":
             reducer = MDS(n_components=N_COMPONENTS, random_state=RANDOM_STATE)
             title = f"MDS of {self.model_name} embedding space"
-            x_label = "Component 1"
-            y_label = "Component 2"
         elif method == "isomap":
             reducer = Isomap(n_components=N_COMPONENTS)
             title = f"Isomap of {self.model_name} embedding space"
-            x_label = "Component 1"
-            y_label = "Component 2"
         else:
             raise ValueError(
                 "Invalid method. Choose from 'pca', 'tsne', 'umap', 'mds', or 'isomap'."
             )
-        return reducer, title, x_label, y_label
+
+        if method != "pca":
+            x_label = "Component 1"
+            y_label = "Component 2"
+            z_label = "Component 3"
+        else:
+            x_label = "Principal Component 1"
+            y_label = "Principal Component 2"
+            z_label = "Principal Component 3"
+
+        return reducer, title, x_label, y_label, z_label
 
     @staticmethod
     def _plot_embeddings(
@@ -194,7 +214,7 @@ class HuggingFaceEmbeddingViz:
                 - title (str): The title of the plot. Defaults to "Embeddings Visualization".
                 - x_label (str): The x-axis label. Defaults to "Component 1".
                 - y_label (str): The y-axis label. Defaults to "Component 2".
-
+                - z_label (str): The z-axis label. Defaults to "Component 3".
         Returns:
             None
         """
@@ -203,17 +223,46 @@ class HuggingFaceEmbeddingViz:
         title = kwargs.get("title", "Embeddings Visualization")
         x_label = kwargs.get("x_label", "Component 1")
         y_label = kwargs.get("y_label", "Component 2")
+        z_label = kwargs.get("z_label", "Component 3")
 
-        fig = px.scatter(
+        title_font_size = max(10, 18 - len(title) // 10)  # Dynamic title size
+        print(title_font_size, 20 - len(title) // 10)
+
+        fig = px.scatter_3d(
             embeddings,
             x=0,
             y=1,
+            z=2,
             text=labels_,
             title=title,
-            labels={"0": x_label, "1": y_label},
+            labels={"0": x_label, "1": y_label, "2": z_label},
             color=color_,
         )
-        fig.update_traces(marker={"size": 8})
+        fig.update_layout(
+            title={
+                "text": title,
+                "y": 0.9,
+                "x": 0.5,
+                "xanchor": "center",
+                "yanchor": "top",
+                "font": {
+                    "size": title_font_size,
+                    "color": "black",
+                    "family": "Arial",
+                    "weight": "bold",
+                },
+            },
+            legend_title_text="Category",
+            legend=dict(
+                x=1,
+                y=1,
+                traceorder="normal",
+                font=dict(family="Arial", size=12, color="black"),
+            ),
+            margin=dict(l=0, r=0, b=0, t=40),
+        )
+        fig.update_traces(marker={"size": 4})  # Reduced marker size
+        fig.update_layout(legend_title_text="Category")
         fig.show()
 
 
@@ -293,9 +342,9 @@ if __name__ == "__main__":
     )
 
     # Hugging Face Model examples
-    # HUGGING_MODEL = "dunzhang/stella_en_400M_v5"
+    HUGGING_MODEL = "dunzhang/stella_en_400M_v5"
     # HUGGING_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
-    HUGGING_MODEL = "facebook/bart-large"
+    # HUGGING_MODEL = "facebook/bart-large"
     # HUGGING_MODEL = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
     # Initialize the class
@@ -303,6 +352,17 @@ if __name__ == "__main__":
 
     # Generate word embeddings for stella model
     embeddings_ = hf_embedding_viz.get_model_embeddings(words)
+
+    # Save embeddings to a file
+    hf_embedding_viz.save_embeddings(embeddings_, "embeddings.npy")
+
+    # Load embeddings from a file
+    loaded_embeddings = hf_embedding_viz.load_embeddings("embeddings.npy")
+
+    # Generate PCA visualization using loaded embeddings
+    reduced_embeddings_pca_loaded = hf_embedding_viz.generate_visualization(
+        loaded_embeddings, labels_=words, color_=domains, method="pca", plot=False
+    )
 
     # Generate PCA visualization
     reduced_embeddings_pca = hf_embedding_viz.generate_visualization(
@@ -326,5 +386,9 @@ if __name__ == "__main__":
 
     # Generate Isomap visualization
     reduced_embeddings_isomap = hf_embedding_viz.generate_visualization(
-        embeddings_, labels_=words, color_=domains, method="isomap", plot=True
+        embeddings_,
+        labels_=words,
+        color_=domains,
+        method="isomap",
+        plot=True,
     )
