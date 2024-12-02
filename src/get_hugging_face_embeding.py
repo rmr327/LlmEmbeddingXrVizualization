@@ -10,7 +10,7 @@ import plotly.express as px  # pylint: disable=import-error
 import torch  # pylint: disable=import-error
 import umap  # pylint: disable=import-error
 from sklearn.decomposition import PCA  # pylint: disable=import-error
-from sklearn.manifold import TSNE  # pylint: disable=import-error
+from sklearn.manifold import MDS, TSNE, Isomap  # pylint: disable=import-error
 from transformers import AutoModel, AutoTokenizer  # pylint: disable=import-error
 
 # stop future warning
@@ -161,8 +161,20 @@ class HuggingFaceEmbeddingViz:
             title = f"UMAP of {self.model_name} Embeddings"
             x_label = "Component 1"
             y_label = "Component 2"
+        elif method == "mds":
+            reducer = MDS(n_components=N_COMPONENTS, random_state=RANDOM_STATE)
+            title = f"MDS of {self.model_name} embedding space"
+            x_label = "Component 1"
+            y_label = "Component 2"
+        elif method == "isomap":
+            reducer = Isomap(n_components=N_COMPONENTS)
+            title = f"Isomap of {self.model_name} embedding space"
+            x_label = "Component 1"
+            y_label = "Component 2"
         else:
-            raise ValueError("Invalid method. Choose from 'pca', 'tsne', or 'umap'.")
+            raise ValueError(
+                "Invalid method. Choose from 'pca', 'tsne', 'umap', 'mds', or 'isomap'."
+            )
         return reducer, title, x_label, y_label
 
     @staticmethod
@@ -283,8 +295,8 @@ if __name__ == "__main__":
     # Hugging Face Model examples
     # HUGGING_MODEL = "dunzhang/stella_en_400M_v5"
     # HUGGING_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
-    # HUGGING_MODEL = "facebook/# bart-large"
-    HUGGING_MODEL = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+    HUGGING_MODEL = "facebook/bart-large"
+    # HUGGING_MODEL = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
     # Initialize the class
     hf_embedding_viz = HuggingFaceEmbeddingViz(HUGGING_MODEL, device)
@@ -304,5 +316,15 @@ if __name__ == "__main__":
 
     # Generate UMAP visualization
     reduced_embeddings_umap = hf_embedding_viz.generate_visualization(
-        embeddings_, labels_=words, color_=domains, method="umap", plot=True
+        embeddings_, labels_=words, color_=domains, method="umap", plot=False
+    )
+
+    # Generate MDS visualization
+    reduced_embeddings_mds = hf_embedding_viz.generate_visualization(
+        embeddings_, labels_=words, color_=domains, method="mds", plot=False
+    )
+
+    # Generate Isomap visualization
+    reduced_embeddings_isomap = hf_embedding_viz.generate_visualization(
+        embeddings_, labels_=words, color_=domains, method="isomap", plot=True
     )
