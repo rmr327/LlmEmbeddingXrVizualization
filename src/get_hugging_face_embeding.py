@@ -82,7 +82,8 @@ class HuggingFaceEmbeddingViz:
 
         return np.array(embeddings)
 
-    def save_embeddings(self, embeddings: np.ndarray, file_path: str) -> None:
+    @staticmethod
+    def save_embeddings(embeddings: np.ndarray, file_path: str) -> None:
         """Save embeddings to a file
 
         Args:
@@ -91,7 +92,8 @@ class HuggingFaceEmbeddingViz:
         """
         np.save(file_path, embeddings)
 
-    def load_embeddings(self, file_path: str) -> np.ndarray:
+    @staticmethod
+    def load_embeddings(file_path: str) -> np.ndarray:
         """Load embeddings from a file
 
         Args:
