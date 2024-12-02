@@ -2,8 +2,10 @@
 
 import os
 import warnings
+from random import randint
 from typing import List, Optional
 
+import bpy  # pylint: disable=import-error
 import numpy as np  # pylint: disable=import-error
 import pandas as pd  # pylint: disable=import-error
 import plotly.express as px  # pylint: disable=import-error
@@ -147,7 +149,10 @@ class HuggingFaceEmbeddingViz:
             reduced_embeddings, columns=[x_label, y_label, z_label]
         )
         if labels_ is not None:
-            reduced_embeddings_df["Labels"] = labels_
+            reduced_embeddings_df["Label"] = labels_
+
+        if color_ is not None:
+            reduced_embeddings_df["sector"] = color_
 
         return reduced_embeddings_df
 
@@ -266,6 +271,113 @@ class HuggingFaceEmbeddingViz:
         fig.update_layout(legend_title_text="Category")
         fig.show()
 
+    def generate_3d_visualization(
+        self,
+        embeddings: pd.DataFrame,
+        output_file: str,
+    ) -> None:
+        """Generate a 3D visualization using Blender
+
+        Args:
+            embeddings (pd.DataFrame): The embeddings to visualize
+            labels_ (List[str]): Labels for the embeddings
+            color_ (List[str]): Color for the embeddings
+            output_file (str): The path to the output file
+        """
+        # rename the first three columns to x, y, z
+        embeddings.columns = ["x", "y", "z"] + list(embeddings.columns[3:])
+
+        # Clear existing mesh objects in the scene
+        bpy.ops.object.select_all(action="DESELECT")
+        bpy.ops.object.select_by_type(type="MESH")
+        bpy.ops.object.delete()
+
+        # Generate unique colors for each label
+        unique_sectors = embeddings["sector"].unique()
+        sector_colors = {
+            label: (
+                randint(0, 255) / 255,
+                randint(0, 255) / 255,
+                randint(0, 255) / 255,
+                1,
+            )
+            for label in unique_sectors
+        }
+
+        # Function to create a sphere at a given location
+        def create_sphere(location, color, radius=0.1):
+            bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
+            obj = bpy.context.object
+            mat = bpy.data.materials.new(name="Material")
+            mat.diffuse_color = color
+            obj.data.materials.append(mat)
+            return obj
+
+        # Plotting the data
+        for _, row in embeddings.iterrows():
+            point_location = (row["x"], row["y"], row["z"])
+            sector = row["sector"]
+            label = row["Label"]
+            color = sector_colors.get(
+                sector, (1, 1, 1, 1)
+            )  # Default to white if sector not found
+            _ = create_sphere(point_location, color)
+            location = point_location
+            text_obj = bpy.ops.object.text_add(
+                location=(location[0] + 0.1, location[1], location[2])
+            )
+            text_obj = bpy.context.object
+            text_obj.data.body = label
+            text_obj.scale = (
+                0.2,
+                0.2,
+                0.2,
+            )  # Adjust the scale of the text if necessary
+            text_obj.rotation_euler = (
+                1.5708,
+                0,
+                0,
+            )  # Rotate the text 90 degrees around the X-axis
+            bpy.ops.object.convert(target="MESH")
+
+        # Create a legend
+        legend_x = max(embeddings["x"]) + 2  # Position legend to the right of the chart
+        legend_y = max(embeddings["y"])
+        legend_z = 0
+
+        # Define materials dictionary
+        materials = {
+            sector: bpy.data.materials.new(name=sector) for sector in unique_sectors
+        }
+        for sector, color in sector_colors.items():
+            materials[sector].diffuse_color = color
+
+        for i, (category, material) in enumerate(materials.items()):
+            # Create a small sphere for the legend
+            legend_sphere_size = 0.2
+            legend_sphere_location = (legend_x, legend_y - i * 1, legend_z)
+            create_sphere(
+                legend_sphere_location, material.diffuse_color, legend_sphere_size
+            )
+
+            # Create a text object for the legend
+            text_obj = bpy.ops.object.text_add(
+                location=(legend_x + 0.5, legend_y - i * 1, legend_z)
+            )
+            text_obj = bpy.context.object
+            text_obj.data.body = category
+            # Set the text color to match the sector color
+            text_material = bpy.data.materials.new(name=f"{category}_Text")
+            text_material.diffuse_color = sector_colors[category]
+            if text_obj.data.materials:
+                text_obj.data.materials[0] = text_material
+            else:
+                text_obj.data.materials.append(text_material)
+            bpy.ops.object.convert(target="MESH")
+
+        # Export to DAE
+        bpy.ops.wm.collada_export(filepath=output_file)
+
 
 if __name__ == "__main__":
 
@@ -355,30 +467,30 @@ if __name__ == "__main__":
     embeddings_ = hf_embedding_viz.get_model_embeddings(words)
 
     # Save embeddings to a file
-    hf_embedding_viz.save_embeddings(embeddings_, "embeddings.npy")
+    # hf_embedding_viz.save_embeddings(embeddings_, "embeddings.npy")
 
     # Load embeddings from a file
-    loaded_embeddings = hf_embedding_viz.load_embeddings("embeddings.npy")
+    # loaded_embeddings = hf_embedding_viz.load_embeddings("embeddings.npy")
 
-    # Generate PCA visualization using loaded embeddings
-    reduced_embeddings_pca_loaded = hf_embedding_viz.generate_visualization(
-        loaded_embeddings, labels_=words, color_=domains, method="pca", plot=False
-    )
+    # # Generate PCA visualization using loaded embeddings
+    # reduced_embeddings_pca_loaded = hf_embedding_viz.generate_visualization(
+    #     embeddings_, labels_=words, color_=domains, method="pca", plot=False
+    # )
 
-    # Generate TSNE visualization
-    reduced_embeddings_tsne = hf_embedding_viz.generate_visualization(
-        embeddings_, labels_=words, color_=domains, method="tsne", plot=False
-    )
+    # # Generate TSNE visualization
+    # reduced_embeddings_tsne = hf_embedding_viz.generate_visualization(
+    #     embeddings_, labels_=words, color_=domains, method="tsne", plot=False
+    # )
 
     # Generate UMAP visualization
     reduced_embeddings_umap = hf_embedding_viz.generate_visualization(
         embeddings_, labels_=words, color_=domains, method="umap", plot=False
     )
 
-    # Generate MDS visualization
-    reduced_embeddings_mds = hf_embedding_viz.generate_visualization(
-        embeddings_, labels_=words, color_=domains, method="mds", plot=False
-    )
+    # # Generate MDS visualization
+    # reduced_embeddings_mds = hf_embedding_viz.generate_visualization(
+    #     embeddings_, labels_=words, color_=domains, method="mds", plot=False
+    # )
 
     # Generate Isomap visualization
     reduced_embeddings_isomap = hf_embedding_viz.generate_visualization(
@@ -387,4 +499,10 @@ if __name__ == "__main__":
         color_=domains,
         method="isomap",
         plot=True,
+    )
+
+    # Generate 3D visualization
+    hf_embedding_viz.generate_3d_visualization(
+        reduced_embeddings_umap,
+        output_file="3d_visualization.dae",
     )
