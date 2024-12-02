@@ -228,7 +228,6 @@ class HuggingFaceEmbeddingViz:
         z_label = kwargs.get("z_label", "Component 3")
 
         title_font_size = max(10, 18 - len(title) // 10)  # Dynamic title size
-        print(title_font_size, 20 - len(title) // 10)
 
         fig = px.scatter_3d(
             embeddings,
@@ -364,11 +363,6 @@ if __name__ == "__main__":
     # Generate PCA visualization using loaded embeddings
     reduced_embeddings_pca_loaded = hf_embedding_viz.generate_visualization(
         loaded_embeddings, labels_=words, color_=domains, method="pca", plot=False
-    )
-
-    # Generate PCA visualization
-    reduced_embeddings_pca = hf_embedding_viz.generate_visualization(
-        embeddings_, labels_=words, color_=domains, method="pca", plot=False
     )
 
     # Generate TSNE visualization
