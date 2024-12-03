@@ -119,7 +119,7 @@ def test_generate_3d_visualization(hf_embedding_viz):
         hf_embedding_viz (HuggingFaceEmbeddingViz): The HuggingFaceEmbeddingViz instance.
     """
     embeddings = np.load("tests/demo_embeddings.npy")
-    labels = [f"hello_world_{i}" for i in range(10)]
+    labels = [f"hello_world_{i}" for i in range(50)]
     reduced_embeddings_df = hf_embedding_viz.generate_visualization(
         embeddings, labels_=labels, method="pca", plot=False
     )
