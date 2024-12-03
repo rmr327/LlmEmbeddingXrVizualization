@@ -12,7 +12,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/rmr327/LlmEmbeddingXrVizualization",
-    packages=find_packages(),
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     install_requires=[
         "bpy>=4.0.0,<5.0.0",
         "certifi>=2024.8.30,<2025.0.0",
