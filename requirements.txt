@@ -1,4 +1,4 @@
-bpy==4.0.0
+bpy
 certifi==2024.8.30
 charset-normalizer==3.4.0
 click==8.1.7
