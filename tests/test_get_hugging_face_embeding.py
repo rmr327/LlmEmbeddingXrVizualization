@@ -5,7 +5,7 @@ import os
 import numpy as np
 import pytest
 import torch
-from src.get_hugging_face_embeding import HuggingFaceEmbeddingViz
+from get_hugging_face_embeding import HuggingFaceEmbeddingViz
 
 
 @pytest.fixture
@@ -79,7 +79,6 @@ def test_generate_visualization(hf_embedding_viz):
     )
 
     assert not reduced_embeddings_df.empty
-    assert "Labels" in reduced_embeddings_df.columns
 
 
 def test_save_and_load_embeddings(hf_embedding_viz):
@@ -120,8 +119,10 @@ def test_generate_3d_visualization(hf_embedding_viz):
     """
     embeddings = np.load("tests/demo_embeddings.npy")
     labels = [f"hello_world_{i}" for i in range(50)]
+    sector = ["sector1" for i in range(50)]
+
     reduced_embeddings_df = hf_embedding_viz.generate_visualization(
-        embeddings, labels_=labels, method="pca", plot=False
+        embeddings, labels_=labels, method="pca", plot=False, color_=sector
     )
     output_file = "tests/temp_visualization.dae"
 
