@@ -1,0 +1,10 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+src/LlmEmbeddingXrVizualization.egg-info/PKG-INFO
+src/LlmEmbeddingXrVizualization.egg-info/SOURCES.txt
+src/LlmEmbeddingXrVizualization.egg-info/dependency_links.txt
+src/LlmEmbeddingXrVizualization.egg-info/entry_points.txt
+src/LlmEmbeddingXrVizualization.egg-info/requires.txt
+src/LlmEmbeddingXrVizualization.egg-info/top_level.txt

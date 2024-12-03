@@ -5,15 +5,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LlmEmbeddingXrVizualization",
-    version="0.1.1",
+    version="0.1.6",
     author="Rakeen Rouf & Akalpit",
     author_email="rakeenrouf@gmail.com",
     description="A package for visualizing embeddings spaces from Hugging Face models",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/rmr327/LlmEmbeddingXrVizualization",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    packages=find_packages(),
     install_requires=[
         "bpy>=4.0.0,<5.0.0",
         "certifi>=2024.8.30,<2025.0.0",
@@ -40,17 +39,6 @@ setup(
         "networkx>=3.2.1,<4.0.0",
         "numba>=0.60.0,<1.0.0",
         "numpy>=1.26.3,<2.0.0",
-        "nvidia-cublas-cu11>=11.11.3.6,<12.0.0",
-        "nvidia-cuda-cupti-cu11>=11.8.87,<12.0.0",
-        "nvidia-cuda-nvrtc-cu11>=11.8.89,<12.0.0",
-        "nvidia-cuda-runtime-cu11>=11.8.89,<12.0.0",
-        "nvidia-cudnn-cu11>=9.1.0.70,<10.0.0",
-        "nvidia-cufft-cu11>=10.9.0.58,<11.0.0",
-        "nvidia-curand-cu11>=10.3.0.86,<11.0.0",
-        "nvidia-cusolver-cu11>=11.4.1.48,<12.0.0",
-        "nvidia-cusparse-cu11>=11.7.5.86,<12.0.0",
-        "nvidia-nccl-cu11>=2.21.5,<3.0.0",
-        "nvidia-nvtx-cu11>=11.8.86,<12.0.0",
         "packaging>=24.2,<25.0",
         "pandas>=2.2.3,<3.0.0",
         "pillow>=10.2.0,<11.0.0",
@@ -88,7 +76,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "llm-embedding-viz=src.plotverse_xr_llm:main",
+            "llm-embedding-viz=mylib.plotverse_xr_llm:main",
         ],
     },
     classifiers=[

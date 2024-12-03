@@ -5,7 +5,7 @@ import os
 import numpy as np
 import pytest
 import torch
-from src.get_hugging_face_embeding import (
+from mylib.get_hugging_face_embeding import (
     HuggingFaceEmbeddingViz,
 )
 
