@@ -127,7 +127,10 @@ def main(
     print("✅ Done!\n")
 
     print(
-        """ℹ️ please take the generated dae file and upload it to xr visualization tool ("eg. Sketchup") to see the 3D object. If Sketchup is used, the resulting XR environment can be uploaded to the cloud and viewed from Meta Quest Headsets."""
+        """ℹ️ please take the generated dae file and upload it to xr visualization 
+    tool ("eg. Sketchup") to see the 3D object. If Sketchup is used, the 
+    resulting XR environment can be uploaded to the cloud and viewed from Meta 
+    Quest Headsets."""
     )
 
 
