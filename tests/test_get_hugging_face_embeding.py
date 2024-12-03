@@ -5,8 +5,7 @@ import os
 import numpy as np
 import pytest
 import torch
-
-from LlmEmbeddingXrVizualization.src.get_hugging_face_embeding import (
+from src.LlmEmbeddingXrVizualization.src.get_hugging_face_embeding import (
     HuggingFaceEmbeddingViz,
 )
 
