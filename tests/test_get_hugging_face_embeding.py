@@ -1,9 +1,10 @@
 """Test suite for get_hugging_face_embeding.py"""
 
+import os
+
 import numpy as np
 import pytest
 import torch
-
 from src.get_hugging_face_embeding import HuggingFaceEmbeddingViz
 
 
@@ -79,3 +80,58 @@ def test_generate_visualization(hf_embedding_viz):
 
     assert not reduced_embeddings_df.empty
     assert "Labels" in reduced_embeddings_df.columns
+
+
+def test_save_and_load_embeddings(hf_embedding_viz):
+    """
+    Test the save_embeddings and load_embeddings methods of HuggingFaceEmbeddingViz.
+
+    This test checks if the embeddings are correctly saved to a file and then
+    loaded back, ensuring the data integrity.
+
+    Args:
+        hf_embedding_viz (HuggingFaceEmbeddingViz): The HuggingFaceEmbeddingViz instance.
+    """
+    text_list = ["Hello world", "Pytest is great"]
+    embeddings = hf_embedding_viz.get_model_embeddings(text_list)
+    file_path = "tests/temp_embeddings.npy"
+
+    # Save embeddings to a file
+    hf_embedding_viz.save_embeddings(embeddings, file_path)
+
+    # Load embeddings from the file
+    loaded_embeddings = hf_embedding_viz.load_embeddings(file_path)
+
+    # Check if the loaded embeddings match the original embeddings
+    assert np.array_equal(embeddings, loaded_embeddings)
+
+    # Clean up the temporary file
+    os.remove(file_path)
+
+
+def test_generate_3d_visualization(hf_embedding_viz):
+    """
+    Test the generate_3d_visualization method of HuggingFaceEmbeddingViz.
+
+    This test checks if the generate_3d_visualization method correctly generates
+    a 3D visualization and saves it to a file.
+
+    Args:
+        hf_embedding_viz (HuggingFaceEmbeddingViz): The HuggingFaceEmbeddingViz instance.
+    """
+    text_list = [f"hello_world_{i}" for i in range(10)]
+    embeddings = hf_embedding_viz.get_model_embeddings(text_list)
+    labels = [f"hello_world_{i}" for i in range(10)]
+    reduced_embeddings_df = hf_embedding_viz.generate_visualization(
+        embeddings, labels_=labels, method="pca", plot=False
+    )
+    output_file = "tests/temp_visualization.dae"
+
+    # Generate 3D visualization and save to file
+    hf_embedding_viz.generate_3d_visualization(reduced_embeddings_df, output_file)
+
+    # Check if the file is created
+    assert os.path.exists(output_file)
+
+    # Clean up the temporary file
+    os.remove(output_file)

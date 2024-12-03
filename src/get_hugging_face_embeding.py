@@ -271,6 +271,16 @@ class HuggingFaceEmbeddingViz:
         fig.update_layout(legend_title_text="Category")
         fig.show()
 
+    @staticmethod
+    def _create_sphere(location, color, radius=0.1):
+        """Function to create a 3D sphere at a given location for Dae file"""
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
+        obj = bpy.context.object
+        mat = bpy.data.materials.new(name="Material")
+        mat.diffuse_color = color
+        obj.data.materials.append(mat)
+        return obj
+
     def generate_3d_visualization(
         self,
         embeddings: pd.DataFrame,
@@ -280,21 +290,29 @@ class HuggingFaceEmbeddingViz:
 
         Args:
             embeddings (pd.DataFrame): The embeddings to visualize
-            labels_ (List[str]): Labels for the embeddings
-            color_ (List[str]): Color for the embeddings
             output_file (str): The path to the output file
         """
         # rename the first three columns to x, y, z
         embeddings.columns = ["x", "y", "z"] + list(embeddings.columns[3:])
 
-        # Clear existing mesh objects in the scene
+        self._clear_scene()
+        sector_colors = self._generate_sector_colors(embeddings)
+        self._plot_data(embeddings, sector_colors)
+        self._create_legend(embeddings, sector_colors)
+        self._export_to_dae(output_file)
+
+    @staticmethod
+    def _clear_scene() -> None:
+        """Clear existing mesh objects in the Blender scene"""
         bpy.ops.object.select_all(action="DESELECT")
         bpy.ops.object.select_by_type(type="MESH")
         bpy.ops.object.delete()
 
-        # Generate unique colors for each label
+    @staticmethod
+    def _generate_sector_colors(embeddings: pd.DataFrame) -> dict:
+        """Generate unique colors for each sector"""
         unique_sectors = embeddings["sector"].unique()
-        sector_colors = {
+        return {
             label: (
                 randint(0, 255) / 255,
                 randint(0, 255) / 255,
@@ -304,16 +322,8 @@ class HuggingFaceEmbeddingViz:
             for label in unique_sectors
         }
 
-        # Function to create a sphere at a given location
-        def create_sphere(location, color, radius=0.1):
-            bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
-            obj = bpy.context.object
-            mat = bpy.data.materials.new(name="Material")
-            mat.diffuse_color = color
-            obj.data.materials.append(mat)
-            return obj
-
-        # Plotting the data
+    def _plot_data(self, embeddings: pd.DataFrame, sector_colors: dict) -> None:
+        """Plot the data points in the Blender scene"""
         for _, row in embeddings.iterrows():
             point_location = (row["x"], row["y"], row["z"])
             sector = row["sector"]
@@ -321,61 +331,75 @@ class HuggingFaceEmbeddingViz:
             color = sector_colors.get(
                 sector, (1, 1, 1, 1)
             )  # Default to white if sector not found
-            _ = create_sphere(point_location, color)
-            location = point_location
-            text_obj = bpy.ops.object.text_add(
-                location=(location[0] + 0.1, location[1], location[2])
-            )
-            text_obj = bpy.context.object
-            text_obj.data.body = label
-            text_obj.scale = (
-                0.2,
-                0.2,
-                0.2,
-            )  # Adjust the scale of the text if necessary
-            text_obj.rotation_euler = (
-                1.5708,
-                0,
-                0,
-            )  # Rotate the text 90 degrees around the X-axis
-            bpy.ops.object.convert(target="MESH")
+            _ = self._create_sphere(point_location, color)
+            self._add_text(label, point_location)
 
-        # Create a legend
+    @staticmethod
+    def _add_text(label: str, location: tuple) -> None:
+        """Add text to the Blender scene"""
+        text_obj = bpy.ops.object.text_add(
+            location=(location[0] + 0.1, location[1], location[2])
+        )
+        text_obj = bpy.context.object
+        text_obj.data.body = label
+        text_obj.scale = (0.2, 0.2, 0.2)  # Adjust the scale of the text if necessary
+        text_obj.rotation_euler = (
+            1.5708,
+            0,
+            0,
+        )  # Rotate the text 90 degrees around the X-axis
+        bpy.ops.object.convert(target="MESH")
+
+    def _create_legend(self, embeddings: pd.DataFrame, sector_colors: dict) -> None:
+        """Create a legend in the Blender scene"""
         legend_x = max(embeddings["x"]) + 2  # Position legend to the right of the chart
         legend_y = max(embeddings["y"])
         legend_z = 0
 
-        # Define materials dictionary
-        materials = {
-            sector: bpy.data.materials.new(name=sector) for sector in unique_sectors
-        }
-        for sector, color in sector_colors.items():
-            materials[sector].diffuse_color = color
-
+        materials = self._create_materials(sector_colors)
         for i, (category, material) in enumerate(materials.items()):
-            # Create a small sphere for the legend
-            legend_sphere_size = 0.2
             legend_sphere_location = (legend_x, legend_y - i * 1, legend_z)
-            create_sphere(
-                legend_sphere_location, material.diffuse_color, legend_sphere_size
+            self._create_sphere(legend_sphere_location, material.diffuse_color, 0.2)
+            self._add_legend_text(
+                category, legend_x, legend_y, i, legend_z, sector_colors=sector_colors
             )
 
-            # Create a text object for the legend
-            text_obj = bpy.ops.object.text_add(
-                location=(legend_x + 0.5, legend_y - i * 1, legend_z)
-            )
-            text_obj = bpy.context.object
-            text_obj.data.body = category
-            # Set the text color to match the sector color
-            text_material = bpy.data.materials.new(name=f"{category}_Text")
-            text_material.diffuse_color = sector_colors[category]
-            if text_obj.data.materials:
-                text_obj.data.materials[0] = text_material
-            else:
-                text_obj.data.materials.append(text_material)
-            bpy.ops.object.convert(target="MESH")
+    @staticmethod
+    def _create_materials(sector_colors: dict) -> dict:
+        """Create materials for each sector"""
+        return {
+            sector: bpy.data.materials.new(name=sector)
+            for sector in sector_colors.keys()
+        }
 
-        # Export to DAE
+    @staticmethod
+    def _add_legend_text(
+        category: str,
+        legend_x: float,
+        legend_y: float,
+        i: int,
+        legend_z: float,
+        **kwargs,
+    ) -> None:
+        """Add text to the legend in the Blender scene"""
+        sector_colors = kwargs.get("sector_colors", {})
+
+        text_obj = bpy.ops.object.text_add(
+            location=(legend_x + 0.5, legend_y - i * 1, legend_z)
+        )
+        text_obj = bpy.context.object
+        text_obj.data.body = category
+        text_material = bpy.data.materials.new(name=f"{category}_Text")
+        text_material.diffuse_color = sector_colors[category]
+        if text_obj.data.materials:
+            text_obj.data.materials[0] = text_material
+        else:
+            text_obj.data.materials.append(text_material)
+        bpy.ops.object.convert(target="MESH")
+
+    @staticmethod
+    def _export_to_dae(output_file: str) -> None:
+        """Export the Blender scene to a DAE file"""
         bpy.ops.wm.collada_export(filepath=output_file)
 
 
