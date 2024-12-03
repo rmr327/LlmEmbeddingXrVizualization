@@ -259,13 +259,13 @@ class HuggingFaceEmbeddingViz:
                 },
             },
             legend_title_text="Category",
-            legend=dict(
-                x=1,
-                y=1,
-                traceorder="normal",
-                font=dict(family="Arial", size=12, color="black"),
-            ),
-            margin=dict(l=0, r=0, b=0, t=40),
+            legend={
+                "x": 1,
+                "y": 1,
+                "traceorder": "normal",
+                "font": {"family": "Arial", "size": 12, "color": "black"},
+            },
+            margin={"l": 0, "r": 0, "b": 0, "t": 40},
         )
         fig.update_traces(marker={"size": 4})  # Reduced marker size
         fig.update_layout(legend_title_text="Category")
