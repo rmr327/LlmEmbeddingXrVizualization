@@ -7,8 +7,10 @@ A package for visualizing embeddings from Hugging Face models.
 
 ```bash
 pip install LlmEmbeddingXrVizualization
+```
 
 ## Usage
 
 ```bash
 llm-embedding-viz --model_name "distilbert/distilbert-base-uncased-finetuned-sst-2-english" --words "example,words,here" --domains "games,trading,school" -s
+```
