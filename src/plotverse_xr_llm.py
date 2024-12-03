@@ -1,6 +1,9 @@
 """This file makes get_huggingface embedding to a command line tool"""
 
+from typing import Optional
+
 import click
+import pandas as pd  # pylint: disable=import-error
 import torch  # pylint: disable=import-error
 from get_hugging_face_embeding import HuggingFaceEmbeddingViz
 
@@ -15,8 +18,9 @@ from get_hugging_face_embeding import HuggingFaceEmbeddingViz
 @click.option(
     "--reduction_method",
     "-r",
-    default="pca",
-    help="Dimensionality reduction method to use.",
+    default="umap",
+    help="Select dimentionality reduction algo from: 'umap', 'pca', 'tsne', "
+    "'isomap', 'mds'.",
 )
 @click.option(
     "--words",
@@ -48,6 +52,12 @@ from get_hugging_face_embeding import HuggingFaceEmbeddingViz
     help="Domain associated the words.",
 )
 @click.option(
+    "--csv_file",
+    "-c",
+    default=None,
+    help="Path to the CSV file containing words and domains.",
+)
+@click.option(
     "--output_file",
     "-o",
     default="output.dae",
@@ -61,17 +71,48 @@ def main(
     reduction_method: str,
     words: str,
     domains: str,
+    csv_file: Optional[str],
     **kwargs,
 ) -> None:
-    """Generate a 3D visualization of word embeddings."""
+    """Generate a 3D XR visualization of word embeddings from a provided Hugging Face model."""
+    print(
+        "🚀🚀🚀 Kicking off the transformation of 3D data into a cool XR dae object!🚀🚀🚀"
+    )
     show_plot = kwargs.get("show_plot")
     output_file = kwargs.get("output_file")
 
-    words_list = words.split(",")
-    domains_list = [domains] * len(words_list)
+    if csv_file:
+        print(
+            "\n📄 Reading words and domains from CSV file. Ignoring words and domains arguments..."
+        )
+        input_df = pd.read_csv(csv_file)
+
+        # if words and domains are not provided, error
+        if (  # pylint: disable=no-member
+            "words" not in input_df.columns
+            or "domains" not in input_df.columns  # pylint: disable=no-member
+        ):  # pylint: disable=no-member
+            raise ValueError("CSV file must contain 'words' and 'domains' columns.")
+
+        words_list = input_df["words"].tolist()
+        domains_list = input_df["domains"].tolist()
+    else:
+        print("\n\n📝 Reading words and domains from arguments...")
+        words_list = words.split(",")
+        domains_list = domains.split(",")
+
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    if device.type == "cpu":
+        print("⚠️ Warning: CUDA not available, using CPU. Performance may be slower.⚠️")
+
+    print("🛠️ Initializing Hugging Face Model (expect some output below)...")
+    print(f"\n        🔌 Using model: {model_name}🔌\n\n")
     viz = HuggingFaceEmbeddingViz(model_name=model_name, device_=device)
+    print("\n\n🧠 Getting model embeddings for words/sentences...")
     embeddings = viz.get_model_embeddings(words_list)
+    print(
+        f"📈 Generating reduced embeddings for words/sentences using {reduction_method}..."
+    )
     reduced_embeddings = viz.generate_visualization(
         embeddings,
         labels_=words_list,
@@ -79,7 +120,17 @@ def main(
         method=reduction_method,
         plot=show_plot,
     )
+    print(f"📊 Generating & Saving 3D Object to Dae file {output_file}... \n")
     viz.generate_3d_visualization(reduced_embeddings, output_file)
+    print(f"\n💾 Generated Dae file saved to {output_file}🎁")
+    print("✅ Done!\n")
+
+    print(
+        "ℹ️ please take the genrated dae file and upload it to xr vizualization "
+        'tool ("eg. Sketchup") to see the 3D object. If Sketchup is used, '
+        "the resulting XR environment can be uploaded to the cloud "
+        "and viewed from Meta Quest Headsets."
+    )
 
 
 if __name__ == "__main__":

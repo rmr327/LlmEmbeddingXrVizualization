@@ -5,7 +5,10 @@ import os
 import numpy as np
 import pytest
 import torch
-from get_hugging_face_embeding import HuggingFaceEmbeddingViz
+
+from LlmEmbeddingXrVizualization.src.get_hugging_face_embeding import (
+    HuggingFaceEmbeddingViz,
+)
 
 
 @pytest.fixture

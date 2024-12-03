@@ -272,7 +272,7 @@ class HuggingFaceEmbeddingViz:
         fig.show()
 
     @staticmethod
-    def _create_sphere(location, color, radius=0.1):
+    def _create_sphere(location, color, radius=0.14):
         """Function to create a 3D sphere at a given location for Dae file"""
         bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=location)
         obj = bpy.context.object
@@ -342,7 +342,7 @@ class HuggingFaceEmbeddingViz:
         )
         text_obj = bpy.context.object
         text_obj.data.body = label
-        text_obj.scale = (0.2, 0.2, 0.2)  # Adjust the scale of the text if necessary
+        text_obj.scale = (0.5, 0.5, 0.5)  # Adjust the scale of the text if necessary
         text_obj.rotation_euler = (
             1.5708,
             0,
@@ -408,7 +408,7 @@ if __name__ == "__main__":
     # Assign device to make sure GPU is used when available
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     if device.type == "cpu":
-        print("Warning: CUDA not available, using CPU. Performance may be slower.")
+        print("⚠️ Warning: CUDA not available, using CPU. Performance may be slower.")
 
     # Words List (Organized by Domain)
     words = [
