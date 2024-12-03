@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LlmEmbeddingXrVizualization",
-    version="0.1.0",
+    version="0.1.1",
     author="Rakeen Rouf & Akalpit",
     author_email="rakeenrouf@gmail.com",
     description="A package for visualizing embeddings spaces from Hugging Face models",
