@@ -42,7 +42,7 @@ jobs:
 
     - name: Lint with pylint
       run: |
-        pylint src/
+        pylint mylib/*.py
 
     - name: Test with pytest
       run: |
