@@ -1,6 +1,9 @@
 # LlmEmbeddingXrVizualization
 [![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml)
 
+>Google Colab Demostration
+https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG
+
 A package for visualizing Large Language Model (LLM) embedding spacese from Hugging Face models with just the model name as input!
 
 Inspired by the belief that data should be experienced, not just viewed, we're bridging the gap between 2D plots and spatial understanding in the LLM embeddings space. The fundamental limitation of 2D screens - trying to compress three dimensions into two - has always forced us to sacrifice either information or clarity. Our platform breaks free from these constraints, transforming raw datasets into immersive XR visualizations using nothing but the name of the model from Hugging Face. Every visualization is accessible on your Meta Quest XR Headsets. We're not just plotting data - we're creating a new way to discover insights through spatial exploration, one that respects the true dimensionality of our data.
