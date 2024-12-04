@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LlmEmbeddingXrVizualization",
-    version="0.1.6",
+    version="0.1.14",
     author="Rakeen Rouf & Akalpit",
     author_email="rakeenrouf@gmail.com",
     description="A package for visualizing embeddings spaces from Hugging Face models",
@@ -66,13 +66,12 @@ setup(
         "torchvision",
         "tqdm>=4.67.1,<5.0.0",
         "transformers>=4.46.3,<5.0.0",
-        "triton>=3.1.0,<4.0.0",
         "typing_extensions>=4.9.0,<5.0.0",
         "tzdata>=2024.2,<2025.0",
         "umap-learn>=0.5.6,<1.0.0",
         "urllib3>=2.2.3,<3.0.0",
-        "xformers",
         "zstandard>=0.23.0,<1.0.0",
+        "kaleido",
     ],
     entry_points={
         "console_scripts": [

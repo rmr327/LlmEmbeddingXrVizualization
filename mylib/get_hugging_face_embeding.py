@@ -271,6 +271,9 @@ class HuggingFaceEmbeddingViz:
         fig.update_layout(legend_title_text="Category")
         fig.show()
 
+        # save the plot to a png file
+        fig.write_image("3d_plot.png")
+
     @staticmethod
     def _create_sphere(location, color, radius=0.14):
         """Function to create a 3D sphere at a given location for Dae file"""

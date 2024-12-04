@@ -122,6 +122,7 @@ def main(
         plot=show_plot,
     )
     print(f"📊 Generating & Saving 3D Object to Dae file {output_file}... \n")
+    # normalize the first three columns between 0 and 5
     viz.generate_3d_visualization(reduced_embeddings, output_file)
     print(f"\n💾 Generated Dae file saved to {output_file}🎁")
     print("✅ Done!\n")
