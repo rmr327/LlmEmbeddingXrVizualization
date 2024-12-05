@@ -4,7 +4,7 @@
 
 > Youtube Introduction Link: [![Watch the video](https://img.shields.io/badge/YouTube-Video-red)](https://www.youtube.com/watch?v=k85tYMeJ7Xo)
 
->Google Colab Demostration: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG)
+>Google Colab Demostration (T4 GPU instance used): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG)
 
 A package for visualizing Large Language Model (LLM) embedding spaces from Hugging Face models with just the model name as input!
 
@@ -12,7 +12,7 @@ Inspired by the belief that data should be experienced, not just viewed, we're b
 
 Each word/sentence embedding is meticulously positioned in virtual space, ensuring perfect spatial accuracy and true-to-scale representation. This precision becomes particularly powerful when visualizing LLM embedding spaces - allowing users to physically explore how concepts are related within these models. By walking through the three-dimensional embedding space, researchers can intuitively verify if semantically similar concepts cluster together and identify unexpected relationships that traditional 2D visualizations might miss.
 
-# Dimensionality Reduction Methods: 
+## Dimensionality Reduction Methods: 
 
 Our platform leverages state-of-the-art dimensionality reduction techniques to transform high-dimensional embeddings into interpretable 3D spaces while preserving essential relationships:
 
@@ -72,6 +72,11 @@ llm-embedding-viz --model_name "distilbert/distilbert-base-uncased-finetuned-sst
 > generated plot for -s flag
 
 ![image](https://github.com/user-attachments/assets/1c332560-e9f8-463a-be2c-095c77f77a1c)
+
+## Quick Note on the Streamlit Dashboard
+
+To run the Streamlit dashboard, just clone this repo, set up a new virtual environment, and install the dependencies from the requirements file. Don’t forget to install the main CLI library too! Once you're in the folder with the Streamlit app, run this command: streamlit run streamlit.py. The Cli tool needs a GPU-enabled device to work properly, so we couldn’t host the dashboard (which uses the Cli tool) on the free tier of Streamlit’s community cloud.
+
 
 ## References
 This idea started in a Hacathon: https://devpost.com/software/plotversexr.
