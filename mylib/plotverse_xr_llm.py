@@ -76,10 +76,10 @@ def main(
     **kwargs,
 ) -> None:
     """Generate a 3D XR visualization of word embeddings from a provided Hugging Face model."""
+
     print(
         "🚀🚀🚀 Kicking off the transformation of 3D data into a cool XR dae object!🚀🚀🚀"
     )
-    show_plot = kwargs.get("show_plot")
     output_file = kwargs.get("output_file")
 
     if csv_file:
@@ -106,6 +106,12 @@ def main(
     if device.type == "cpu":
         print("⚠️ Warning: CUDA not available, using CPU. Performance may be slower.⚠️")
 
+    if len(words_list) != len(domains_list):
+        raise ValueError("Number of words/sentences and domains must be the same.")
+
+    if len(words_list) < 6:
+        raise ValueError("Number of words/sentences must be at least 6.")
+
     print("🛠️ Initializing Hugging Face Model (expect some output below)...")
     print(f"\n        🔌 Using model: {model_name}🔌\n\n")
     viz = HuggingFaceEmbeddingViz(model_name=model_name, device_=device)
@@ -119,7 +125,7 @@ def main(
         labels_=words_list,
         color_=domains_list,
         method=reduction_method,
-        plot=show_plot,
+        plot=kwargs.get("show_plot", False),
     )
     print(f"📊 Generating & Saving 3D Object to Dae file {output_file}... \n")
     # normalize the first three columns between 0 and 5
@@ -128,9 +134,9 @@ def main(
     print("✅ Done!\n")
 
     print(
-        """ℹ️ please take the generated dae file and upload it to xr visualization 
-    tool ("eg. Sketchup") to see the 3D object. If Sketchup is used, the 
-    resulting XR environment can be uploaded to the cloud and viewed from Meta 
+        """ℹ️ please take the generated dae file and upload it to xr visualization \
+    tool ("eg. Sketchup") to see the 3D object. If Sketchup is used, the \
+    resulting XR environment can be uploaded to the cloud and viewed from Meta \
     Quest Headsets."""
     )
 

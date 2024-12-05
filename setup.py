@@ -1,3 +1,5 @@
+"""Setup script for the LlmEmbeddingXrVizualization package."""
+
 from setuptools import find_packages, setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -5,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LlmEmbeddingXrVizualization",
-    version="0.1.14",
+    version="1.1.1",
     author="Rakeen Rouf & Akalpit",
     author_email="rakeenrouf@gmail.com",
     description="A package for visualizing embeddings spaces from Hugging Face models",
