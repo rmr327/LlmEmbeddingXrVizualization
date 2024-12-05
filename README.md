@@ -1,8 +1,9 @@
 # LlmEmbeddingXrVizualization
 [![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml)
 
->Google Colab Demostration
-https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG
+> Youtube Introduction Link: https://www.youtube.com/watch?v=k85tYMeJ7Xo
+
+>Google Colab Demostration: https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG
 
 A package for visualizing Large Language Model (LLM) embedding spaces from Hugging Face models with just the model name as input!
 
