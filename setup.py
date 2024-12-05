@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LlmEmbeddingXrVizualization",
-    version="1.1.1",
+    version="1.1.2",
     author="Rakeen Rouf & Akalpit",
     author_email="rakeenrouf@gmail.com",
     description="A package for visualizing embeddings spaces from Hugging Face models",
@@ -16,7 +16,7 @@ setup(
     url="https://github.com/rmr327/LlmEmbeddingXrVizualization",
     packages=find_packages(),
     install_requires=[
-        "bpy>=4.0.0,<5.0.0",
+        "bpy>=3.0.0,<5.0.0",
         "certifi>=2024.8.30,<2025.0.0",
         "charset-normalizer>=3.4.0,<4.0.0",
         "click>=8.1.7,<9.0.0",
