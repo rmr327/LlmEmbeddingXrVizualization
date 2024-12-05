@@ -10,23 +10,23 @@ Inspired by the belief that data should be experienced, not just viewed, we're b
 
 Each word/sentence embedding is meticulously positioned in virtual space, ensuring perfect spatial accuracy and true-to-scale representation. This precision becomes particularly powerful when visualizing LLM embedding spaces - allowing users to physically explore how concepts are related within these models. By walking through the three-dimensional embedding space, researchers can intuitively verify if semantically similar concepts cluster together and identify unexpected relationships that traditional 2D visualizations might miss.
 
-Dimensionality Reduction Methods: 
+# Dimensionality Reduction Methods: 
 
 Our platform leverages state-of-the-art dimensionality reduction techniques to transform high-dimensional embeddings into interpretable 3D spaces while preserving essential relationships:
 
-t-SNE (t-Distributed Stochastic Neighbor Embedding):
+### t-SNE (t-Distributed Stochastic Neighbor Embedding):
 Excels at revealing local structure and clusters in high-dimensional data by maintaining probability distributions of pairwise distances between points. Particularly effective for visualizing how different concepts cluster in embedding space, though may sacrifice some global structure preservation.
 
-UMAP (Uniform Manifold Approximation and Projection):
+### UMAP (Uniform Manifold Approximation and Projection):
 Combines the best of t-SNE's local structure preservation with better maintenance of global patterns. Faster than t-SNE and better at preserving topological structure, making it ideal for exploring both fine-grained relationships and broader patterns in embedding spaces.
 
-PCA (Principal Component Analysis):
+### PCA (Principal Component Analysis):
 A linear technique that identifies the directions of maximum variance in the data. While simpler than t-SNE or UMAP, PCA is invaluable for understanding the main axes of variation in embedding spaces and often serves as an excellent first step in exploratory analysis.
 
-MDS (Multidimensional Scaling):
+### MDS (Multidimensional Scaling):
 Focuses on preserving pairwise distances between points, making it excellent for understanding relative distances between concepts in the embedding space. Particularly useful when the absolute positioning of embeddings is less important than their relationships to each other.
 
-ISOMAP:
+### ISOMAP:
 A nonlinear technique that estimates the geodesic distances between all points. Especially powerful for data that lies on a curved manifold, helping reveal the intrinsic geometry of the embedding space that might be missed by linear methods.
 
 Each reduction method offers unique insights into the structure of your embedding space, and our XR platform allows you to seamlessly switch between them, comparing and contrasting their representations to build a more complete understanding of your language model's internal representations.
