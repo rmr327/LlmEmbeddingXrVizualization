@@ -42,7 +42,7 @@ jobs:
 
     - name: Lint with pylint
       run: |
-        find mylib -name "*.py" ! -name "streamlit_*.py" | xargs pylint
+        find mylib -name "*.py" ! -name "streamlit.py" | xargs pylint
 
     - name: Test with pytest
       run: |
