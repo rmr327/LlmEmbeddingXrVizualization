@@ -1,6 +1,5 @@
 """Streamlit app for LLM Embedding Visualization."""
 
-import re
 import subprocess
 
 import pandas as pd
@@ -11,13 +10,6 @@ import torch
 DEFAULT_MODEL = "dunzhang/stella_en_400M_v5"
 DEFAULT_OUTPUT_FILE = "output.dae"
 REDUCTION_METHODS = ["umap", "pca", "tsne", "isomap", "mds"]
-
-
-# Function to remove extra spaces
-def remove_extra_spaces(text):
-    """Function to remove extra spaces from text."""
-    return re.sub(r"\s+", " ", text)
-
 
 # Main title
 st.markdown(
@@ -102,7 +94,6 @@ Sports""",
             bash_command = f"""llm-embedding-viz -m {model_name} \
             -r {selected_algorithm} -o {output_file_path} -w '{words}' -d '{domains}' -s"""
             # Run the bash command
-            bash_command = remove_extra_spaces(bash_command)
             process = subprocess.run(
                 bash_command, shell=True, check=True, text=True, capture_output=True
             )
@@ -136,7 +127,6 @@ i will play basketball, I will play football, I will watch soccer""",
             bash_command = f"""llm-embedding-viz -m {model_name} \
             -r {selected_algorithm} -o {output_file_path} \
             -w '{text_input}' -d '{domains}' -s"""
-            bash_command = remove_extra_spaces(bash_command)
             process = subprocess.run(
                 bash_command, shell=True, check=True, text=True, capture_output=True
             )
@@ -166,7 +156,6 @@ def process_csv_input():
         if st.button("Process CSV and Export"):
             bash_command = f"""llm-embedding-viz -m {model_name} \
             -r {selected_algorithm} -o {output_file_path} -c uploaded_file.csv -s"""
-            bash_command = remove_extra_spaces(bash_command)
             process = subprocess.run(
                 bash_command, shell=True, check=True, text=True, capture_output=True
             )
