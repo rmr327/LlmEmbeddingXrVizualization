@@ -1,6 +1,8 @@
 # LlmEmbeddingXrVizualization
 [![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG)
+
 > Youtube Introduction Link: https://www.youtube.com/watch?v=k85tYMeJ7Xo
 
 >Google Colab Demostration: https://colab.research.google.com/drive/1ngNpXc42u_02hHu2kFF3LyljNxWLAaaP#scrollTo=1uBORXM-ATLG
