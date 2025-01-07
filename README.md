@@ -1,5 +1,8 @@
 # LlmEmbeddingXrVizualization
-[![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml)
+[![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml) 
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/LlmEmbeddingXrVizualization)
+
 
 
 > Youtube Introduction Link: [![Watch the video](https://img.shields.io/badge/YouTube-Video-red)](https://www.youtube.com/watch?v=k85tYMeJ7Xo)
