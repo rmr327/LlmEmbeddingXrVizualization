@@ -1,7 +1,7 @@
 # LlmEmbeddingXrVizualization
 [![Python package](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml/badge.svg)](https://github.com/rmr327/LlmEmbeddingXrVizualization/actions/workflows/python-package.yml) 
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/LlmEmbeddingXrVizualization)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/LlmEmbeddingXrVizualization)](https://pypistats.org/packages/llmembeddingxrvizualization)
 
 
 
